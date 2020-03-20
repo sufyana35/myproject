@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product Summary Report{% endblock %}
+
+{% block body %}
+
+    <div class="container mt-5">
+        <h1>{{ controller_name }}</h1>
+
+        <div class="row mt-5 bg-dark font-weight-bold text-light">
+            <div class="col-sm p-2"> Product Code</div>
+            <div class="col-sm p-2"> Product Description</div>
+            <div class="col-sm p-2"> Product Name</div>
+            <div class="col-sm p-2"> Stock</div>
+            <div class="col-sm p-2"> CostGBP</div>
+            <div class="col-sm p-2"> Discontinued</div>
+            <div class="col-sm p-2"> File ID</div>
+            <div class="col-sm p-2"> Failed Note</div>
+        </div>
+        {% for products in products %}
+            <div class="row mt-2 bg-light">
+                <div class="col-sm p-2"> {{ products.productCode }}</div>
+                <div class="col-sm p-2"> {{ products.productName }}</div>
+                <div class="col-sm p-2"> {{ products.productDescription }}</div>
+                <div class="col-sm p-2"> {{ products.stock }}</div>
+                <div class="col-sm p-2"> {{ products.costGBP }}</div>
+                <div class="col-sm p-2"> {{ products.discontinued }}</div>
+                <div class="col-sm p-2"> {{ products.fileId }}</div>
+                <div class="col-sm p-2"> {{ products.failedNote }}</div>
+            </div>
+        {% endfor %}
+
+        <hr>
+        <h5>This page lists all the products that have not been imported due to validation constraints and if any missing or incorrect data</h5>
+    </div>
+{% endblock %}

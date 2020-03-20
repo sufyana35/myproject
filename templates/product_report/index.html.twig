@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ controller_name }}{% endblock %}
+
+{% block body %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>
+
+        function testAjax() {
+            $.ajax('{{ path('product_report_state', {uploadId: uploadId}) }}', {
+                'dataType': 'json',
+                'success': function (data) {
+                    console.log(data);
+
+                    if (data.processed === false) {
+                        // delay
+                        // checkState();
+                        console.log('waiting for files to be processed');
+
+                    } else {
+                        console.log('file processed');
+                        window.location = '{{ path('product_report_summary', {fileId: uploadId}) }}';
+                    }
+                }
+            },2);
+
+        }
+
+        testAjax(function(checkState){
+            // here you use the output
+
+        });
+
+        setInterval('testAjax()', 10000);
+
+    </script>
+
+    <div class="container mt-5">
+        <div class="row d-flex justify-content-center m-5">
+            <div class="spinner-border m-5" role="status" style="width: 10rem; height: 10rem;">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <div class="row d-flex justify-content-center m-5">
+            <h2>Waiting For Files To Be Processed...</h2>
+        </div>
+        <div class="row d-flex justify-content-center m-2">
+            <h5>Refresh browser or wait</h5>
+        </div>
+
+    </div>
+{% endblock %}

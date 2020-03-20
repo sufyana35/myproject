@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}View Product{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row m-1 mt-5">
+            <h1>Product {{ product.productName }}! </h1>
+        </div>
+        <br>  <p class="text-left">The Product Being Viewed Here Is {{ product.productName }} </p>
+
+        <div class="card">
+            <div class="row">
+                <aside class="col-sm-5 border-right">
+                    <article class="gallery-wrap">
+                        <div class="img-big-wrap overflow-hidden">
+                            <div> <a href="#"><img src="https://brain-images-ssl.cdn.dixons.com/2/2/10163022/u_10163022.jpg"></a></div>
+                        </div> <!-- slider-product.// -->
+                        <div class="img-small-wrap overflow-hidden">
+                            <div class="item-gallery"> <img src="{{ random([
+                                    'https://brain-images-ssl.cdn.dixons.com/2/2/10163022/u_10163022.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/4/3/10191734/l_10191734_005.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/6/2/10143726/l_10143726_003.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/3/7/10202173/u_10202173.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/8/3/10180938/u_10180938.jpg']) }}"  > </div>
+                            <div class="item-gallery"> <img src="{{ random([
+                                    'https://brain-images-ssl.cdn.dixons.com/2/2/10163022/u_10163022.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/4/3/10191734/l_10191734_005.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/6/2/10143726/l_10143726_003.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/3/7/10202173/u_10202173.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/8/3/10180938/u_10180938.jpg']) }}"  > </div>
+                            <div class="item-gallery"> <img src="{{ random([
+                                    'https://brain-images-ssl.cdn.dixons.com/2/2/10163022/u_10163022.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/4/3/10191734/l_10191734_005.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/6/2/10143726/l_10143726_003.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/3/7/10202173/u_10202173.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/8/3/10180938/u_10180938.jpg']) }}"  > </div>
+                            <div class="item-gallery"> <img src="{{ random([
+                                    'https://brain-images-ssl.cdn.dixons.com/2/2/10163022/u_10163022.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/4/3/10191734/l_10191734_005.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/6/2/10143726/l_10143726_003.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/3/7/10202173/u_10202173.jpg',
+                                    'https://brain-images-ssl.cdn.dixons.com/8/3/10180938/u_10180938.jpg']) }}"  > </div>
+                        </div> <!-- slider-nav.// -->
+                    </article> <!-- gallery-wrap .end// -->
+                </aside>
+                <aside class="col-sm-7">
+                    <article class="card-body p-5">
+                        <h3 class="title mb-3">{{ product.productName}}</h3>
+
+                        <p class="price-detail-wrap">
+	                        <span class="price h3 text-warning">
+		                        <span class="currency">UK £</span><span class="num">{{ product.costGBP }}</span>
+	                        </span>
+                        </p> <!-- price-detail-wrap .// -->
+                        <dl class="item-property">
+                            <dt>Description</dt>
+                            <dd><p>{{ product.productDescription }}</p></dd>
+                        </dl>
+                        <dl class="param param-feature">
+                            <dt>Model#</dt>
+                            <dd>{{ product.productCode }}</dd>
+                        </dl>  <!-- item-property-hor .// -->
+                        <dl class="param param-feature">
+                            {% if product.discontinued|default %}
+                                <dt>Discontinued</dt>
+                                <dd>{{ product.discontinued }}</dd>
+                            {% endif %}
+                        </dl>  <!-- item-property-hor .// -->
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-5">
+                                <dl class="param param-inline">
+                                    <dt>Quantity: </dt>
+                                    <dd>{{ product.stock }}</dd>
+                                </dl>  <!-- item-property .// -->
+                            </div>
+                        </div> <!-- row.// -->
+
+                        <hr>
+                        <a href="#" class="btn btn-lg btn-primary text-uppercase"> Buy now </a>
+                        <a href="#" class="btn btn-lg btn-outline-primary text-uppercase"> <i class="fas fa-shopping-cart"></i> Add to cart </a>
+                    </article> <!-- card-body.// -->
+                </aside> <!-- col.// -->
+            </div> <!-- row.// -->
+        </div> <!-- card.// -->
+
+    </div>
+    <!--container.//-->
+    <div class="container mt-5">
+        <h4>Single Product</h4>
+        <hr>
+        <h5>The Product Listed Is: {{ product.productName }}</h5>
+    </div>
+{% endblock %}

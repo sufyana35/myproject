@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Database Products{% endblock %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row m-1 mt-5">
+            <h1>Number of Products ({{ pagination.getTotalItemCount }})</h1>
+        </div>
+
+        <div class="row h-25">
+            {% for products in pagination %}
+                <div class="col-md-3 mt-5">
+                    <figure class="card card-product bg">
+                        <div class="img-wrap overflow-hidden" style="max-height: 400px; max-width: 600px">
+                            <img src="{{ random([
+                                'https://brain-images-ssl.cdn.dixons.com/2/2/10163022/u_10163022.jpg',
+                                'https://brain-images-ssl.cdn.dixons.com/4/3/10191734/l_10191734_005.jpg',
+                                'https://brain-images-ssl.cdn.dixons.com/6/2/10143726/l_10143726_003.jpg',
+                                'https://brain-images-ssl.cdn.dixons.com/3/7/10202173/u_10202173.jpg',
+                                'https://brain-images-ssl.cdn.dixons.com/8/3/10180938/u_10180938.jpg']) }}"   alt="random">
+                        </div>
+                        <figcaption class="info-wrap m-4">
+                            <h6>Product Code: {{ products.productCode }}</h6>
+                            <h6>Product Name: {{ products.productName }}</h6>
+                            <h6>Product Description: {{ products.productDescription }}</h6>
+                            <h6>Product Stock: {{ products.stock }}</h6>
+                            <h6>Product Discontinued: {{ products.discontinued }}</h6>
+                            <div class="action-wrap mt-md-4">
+                                <a href="/products/ {{products.id }}" class="btn btn-primary btn-sm float-right"> View </a>
+                                <div class="price-wrap h5">
+                                    <span class="price-new">£{{ products.costGBP|number_format(2, '.', ',') }}</span>
+                                    <del class="price-old">£1980</del>
+                                </div> <!-- price-wrap.// -->
+                            </div> <!-- action-wrap -->
+                        </figcaption>
+                    </figure> <!-- card // -->
+                </div>
+
+            {% endfor %}
+        </div>
+
+        <hr>
+        <h5>All Products Are Listed Here</h5>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row d-flex justify-content-center">
+            <div class="row">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
