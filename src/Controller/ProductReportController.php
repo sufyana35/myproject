@@ -81,6 +81,8 @@ class ProductReportController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $search = $form['search']->getData(); //GET DATA FROM FORM
+
+
         }
 
         $products = $this->getDoctrine()->getRepository(Products::class)->findAll();
