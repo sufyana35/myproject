@@ -5,9 +5,12 @@ namespace App\Controller;
 use App\Entity\FailedProducts;
 use App\Entity\Products;
 use App\Entity\Upload;
+use App\Form\AllProductsType;
 use App\Repository\ProductsRepository;
 use Knp\Component\Pager\PaginatorInterface;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -66,12 +69,30 @@ class ProductReportController extends AbstractController
      * @param PaginatorInterface $paginator
      * @param Request $request
      * @param ProductsRepository $repository
+     * @param AdapterInterface $cache
      * @return Response
+     *
+     * @throws InvalidArgumentException
      */
-    public function products(PaginatorInterface $paginator, Request $request, ProductsRepository $repository)
+    public function products(PaginatorInterface $paginator, Request $request, ProductsRepository $repository, AdapterInterface $cache)
     {
+        $form = $this->createForm(AllProductsType::class);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $search = $form['search']->getData(); //GET DATA FROM FORM
+        }
+
         $products = $this->getDoctrine()->getRepository(Products::class)->findAll();
         $queryBuilder = $repository->findAll();
+
+        $item = $cache->getItem('test');
+        if (!$item->isHit()) {
+            $item->set('value');
+            $cache->save($item);
+        }
+        $articleContent = $item->get();
+        //dd($cache->getItem('test'));
 
         $pagination = $paginator->paginate(
             $queryBuilder, /* query NOT result */
@@ -83,6 +104,8 @@ class ProductReportController extends AbstractController
             'controller_name' => 'Products in Database',
             'products' => $products,
             'pagination' => $pagination,
+            'cache' => $cache,
+            'allProductsType' => $form->createView(),
         ]);
     }
 

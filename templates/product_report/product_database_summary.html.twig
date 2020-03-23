@@ -9,6 +9,17 @@
             <h1>Number of Products ({{ pagination.getTotalItemCount }})</h1>
         </div>
 
+
+
+        {% for cache in cache %}
+            {{ cache.item() }}
+        {% endfor %}
+
+        {{ form_start(allProductsType) }}
+        {{ form_row(allProductsType.search) }}
+        <button type="submit" class="btn btn-primary">Create!!</button>
+        {{ form_end(allProductsType) }}
+
         <div class="row h-25">
             {% for products in pagination %}
                 <div class="col-md-3 mt-5">

@@ -12,7 +12,7 @@ class send extends Command
 {
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+        $connection = new AMQPStreamConnection('localhost', 5672, 'root', 'r00t');
         $channel = $connection->channel();
 
         $channel->queue_declare('hello', false, false, false, false);
@@ -24,5 +24,7 @@ class send extends Command
 
         $channel->close();
         $connection->close();
+
+        return 1;
     }
 }
