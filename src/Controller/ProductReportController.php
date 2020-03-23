@@ -7,6 +7,7 @@ use App\Entity\Products;
 use App\Entity\Upload;
 use App\Form\AllProductsType;
 use App\Repository\ProductsRepository;
+use FOS\ElasticaBundle\FOSElasticaBundle;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -77,6 +78,10 @@ class ProductReportController extends AbstractController
     public function products(PaginatorInterface $paginator, Request $request, ProductsRepository $repository, AdapterInterface $cache)
     {
         $form = $this->createForm(AllProductsType::class);
+        $products = $this->getDoctrine()->getRepository(Products::class)->findAll();
+        $queryBuilder = $repository->findAll();
+
+
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -85,8 +90,7 @@ class ProductReportController extends AbstractController
 
         }
 
-        $products = $this->getDoctrine()->getRepository(Products::class)->findAll();
-        $queryBuilder = $repository->findAll();
+
 
         $item = $cache->getItem('test');
         if (!$item->isHit()) {
