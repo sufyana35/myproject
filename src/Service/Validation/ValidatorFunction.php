@@ -5,6 +5,7 @@ namespace App\Service\Validation;
 use App\Entity\Collections;
 use App\Entity\FailedProducts;
 use App\Entity\Products;
+use App\Service\RabbitMQ\send;
 
 class ValidatorFunction extends Collections
 {
@@ -13,6 +14,7 @@ class ValidatorFunction extends Collections
         //validation functions
         $numberFormatter = new NumberFormatter();
         $booleanFormatter = new BooleanFormatter();
+        $RabitMqSender = new send();
 
         //Put array into entity collections
         $products = new Products();
@@ -54,6 +56,7 @@ class ValidatorFunction extends Collections
                         'Not imported due to validation rules');
                 } else {
                     $successUploadedProductsCollections[] = $item; //success
+                    //$RabitMqSender->sender($item);
                 }
             }
         }

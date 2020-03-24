@@ -34,15 +34,3 @@ services:
             - 'app:file_upload:process'
             - '@doctrine'
         tags: ['console.command']
-
-    App\Service\RabbitMQ\receive:
-        arguments:
-            - 'app:receive'
-            - '@doctrine'
-        tags: ['console.command']
-
-    App\Service\RabbitMQ\send:
-        arguments:
-            - 'app:send'
-            - '@doctrine'
-        tags: ['console.command']

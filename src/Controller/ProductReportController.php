@@ -6,19 +6,16 @@ use App\Entity\FailedProducts;
 use App\Entity\Products;
 use App\Entity\Upload;
 use App\Form\AllProductsType;
+use App\Form\DeleteType;
 use App\Repository\ProductsRepository;
-use FOS\ElasticaBundle\FOSElasticaBundle;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
-use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Predis\Client;
-use Symfony\Component\Cache\Adapter\RedisAdapter;
 
 class ProductReportController extends Controller
 {
@@ -73,25 +70,30 @@ class ProductReportController extends Controller
      * @param PaginatorInterface $paginator
      * @param Request $request
      * @param ProductsRepository $repository
-     * @param AdapterInterface $cache
      * @return Response
      *
-     * @throws InvalidArgumentException
      */
-    public function products(PaginatorInterface $paginator, Request $request, ProductsRepository $repository, AdapterInterface $cache)
+    public function products(PaginatorInterface $paginator, Request $request, ProductsRepository $repository)
     {
         $form = $this->createForm(AllProductsType::class);
-
         $products = $this->getDoctrine()->getRepository(Products::class)->findAll();
+
         $queryBuilder = $repository->findAll();
+
+        //PREDIS
+        //$client = new Client();
+        //$client->set('foo', 'bar');
+        //$value = $client->get('foo');
+        //dd($value);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $search = $form['search']->getData(); //GET DATA FROM FORM
 
-
+            /** var FOS\ElasticaBundle\Finder\TransformedFinder */
             $finder = $this->container->get('fos_elastica.finder.app.user');
-            $paginator = $this->get('knp_paginator');
+
+            /** var array of App\Entity\Products limited to 10 results */
             $results = $finder->createPaginatorAdapter($search);
             $pagination = $paginator->paginate(
                 $results, /* query NOT result */
@@ -107,25 +109,6 @@ class ProductReportController extends Controller
             ]);
         }
 
-        //PREDIS
-        //$client = new Client();
-        //$client->set('foo', 'bar');
-        //$value = $client->get('foo');
-        //dd($value);
-
-        //Cache
-        $client = RedisAdapter::createConnection(
-            'redis://localhost'
-        );
-
-        //$cache = new RedisAdapter($client);
-        $item = $cache->getItem('test');
-        if (!$item->isHit()) {
-            $item->set($products);
-            $cache->save($item);
-        }
-        $cached = $item->get();
-
         $pagination = $paginator->paginate(
             $queryBuilder, /* query NOT result */
             $request->query->getInt('page', 1)/*page number*/,
@@ -134,7 +117,7 @@ class ProductReportController extends Controller
 
         return $this->render('product_report/product_database_summary.html.twig', [
             'controller_name' => 'Products in Database',
-            'products' => $cached,
+            'products' => $products,
             'pagination' => $pagination,
             'allProductsType' => $form->createView(),
         ]);
@@ -145,15 +128,24 @@ class ProductReportController extends Controller
      *
      * @param $productId
      *
+     * @param Request $request
      * @return Response
      */
-    public function singleProducts($productId)
+    public function singleProducts($productId, Request $request, EntityManagerInterface $em)
     {
+        $form = $this->createForm(DeleteType::class);
         $product = $this->getDoctrine()->getRepository(Products::class)->find($productId);
 
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->redirectToRoute('products');
+        }
+
         return $this->render('product_report/single_product.html.twig', [
-            'controller_name' => 'View All Products',
+            'controller_name' => 'View Single Products',
             'product' => $product,
+            'deleteType' => $form->createView(),
         ]);
     }
+
 }

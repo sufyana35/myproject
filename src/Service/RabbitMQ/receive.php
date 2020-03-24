@@ -3,14 +3,11 @@
 namespace App\Service\RabbitMQ;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
-class receive extends Command
+class receive
 {
 
-    public function execute(InputInterface $input, OutputInterface $output): int
+    public function receive()
     {
         $connection = new AMQPStreamConnection('localhost', 5672, 'root', 'r00t');
         $channel = $connection->channel();
@@ -31,7 +28,5 @@ class receive extends Command
 
         $channel->close();
         $connection->close();
-
-        return 1;
     }
 }

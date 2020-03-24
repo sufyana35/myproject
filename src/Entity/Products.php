@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductsRepository")
+ * @Search(repositoryClass="App\Repository\ProductsRepository")
  */
 class Products
 {
