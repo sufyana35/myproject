@@ -11,13 +11,16 @@ use FOS\ElasticaBundle\FOSElasticaBundle;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Predis\Client;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
 
-class ProductReportController extends AbstractController
+class ProductReportController extends Controller
 {
     /**
      * @Route("/product/report/{uploadId}", name="product_report")
@@ -78,27 +81,50 @@ class ProductReportController extends AbstractController
     public function products(PaginatorInterface $paginator, Request $request, ProductsRepository $repository, AdapterInterface $cache)
     {
         $form = $this->createForm(AllProductsType::class);
+
         $products = $this->getDoctrine()->getRepository(Products::class)->findAll();
         $queryBuilder = $repository->findAll();
-
-
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $search = $form['search']->getData(); //GET DATA FROM FORM
 
 
+            $finder = $this->container->get('fos_elastica.finder.app.user');
+            $paginator = $this->get('knp_paginator');
+            $results = $finder->createPaginatorAdapter($search);
+            $pagination = $paginator->paginate(
+                $results, /* query NOT result */
+                $request->query->getInt('page', 1)  /*page number*/,
+                12  /*limit per page*/
+            );
+
+            return $this->render('product_report/product_database_summary.html.twig', [
+                'controller_name' => 'Products in Database',
+                'products' => $products,
+                'pagination' => $pagination,
+                'allProductsType' => $form->createView(),
+            ]);
         }
 
+        //PREDIS
+        //$client = new Client();
+        //$client->set('foo', 'bar');
+        //$value = $client->get('foo');
+        //dd($value);
 
+        //Cache
+        $client = RedisAdapter::createConnection(
+            'redis://localhost'
+        );
 
+        //$cache = new RedisAdapter($client);
         $item = $cache->getItem('test');
         if (!$item->isHit()) {
-            $item->set('value');
+            $item->set($products);
             $cache->save($item);
         }
-        $articleContent = $item->get();
-        //dd($cache->getItem('test'));
+        $cached = $item->get();
 
         $pagination = $paginator->paginate(
             $queryBuilder, /* query NOT result */
@@ -108,9 +134,8 @@ class ProductReportController extends AbstractController
 
         return $this->render('product_report/product_database_summary.html.twig', [
             'controller_name' => 'Products in Database',
-            'products' => $products,
+            'products' => $cached,
             'pagination' => $pagination,
-            'cache' => $cache,
             'allProductsType' => $form->createView(),
         ]);
     }
